@@ -1,8 +1,8 @@
 <?php
 
-require_once dirname(__FILE__) . '/OAuthStoreSQL.php';
+require_once dirname(__FILE__) . '/OAuthStoreJSQL.php';
 
-class OAuthStoreJDatabase extends OAuthStoreSQL
+class OAuthStoreJDatabase extends OAuthStoreJSQL
 {
   /**
    * The MySQL connection 
