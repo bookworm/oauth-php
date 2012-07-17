@@ -42,7 +42,7 @@ class OAuthRequest
 	protected $realm;
 	
 	/* all the parameters, RFC3986 encoded name/value pairs */
-	protected $param = array();
+  public $param = array();
 
 	/* the parsed request uri */
 	protected $uri_parts;
