@@ -206,7 +206,7 @@ abstract class OAuthStoreJSQL extends OAuthStoreAbstract
               oct_token       as token,
               oct_token_secret    as token_secret,
               ocr_signature_methods as signature_methods
-          FROM oauth_consumer_registry
+          FROM #__ac_oauth_consumer_registry
             JOIN oauth_consumer_token ON oct_ocr_id_ref = ocr_id
           WHERE ocr_server_uri_host = \'%s\'
             AND ocr_server_uri_path = LEFT(\'%s\', LENGTH(ocr_server_uri_path))
@@ -259,7 +259,7 @@ abstract class OAuthStoreJSQL extends OAuthStoreAbstract
               ocr_authorize_uri   as authorize_uri,
               ocr_access_token_uri  as access_token_uri,
               IF(oct_token_ttl >= \'9999-12-31\', NULL, UNIX_TIMESTAMP(oct_token_ttl) - UNIX_TIMESTAMP(NOW())) as token_ttl
-          FROM oauth_consumer_registry
+          FROM #__ac_oauth_consumer_registry
               JOIN oauth_consumer_token
               ON oct_ocr_id_ref = ocr_id
           WHERE ocr_consumer_key = \'%s\'
@@ -324,7 +324,7 @@ abstract class OAuthStoreJSQL extends OAuthStoreAbstract
     {
       $ocr_id = $this->query_one('
             SELECT ocr_id
-            FROM oauth_consumer_registry
+            FROM #__ac_oauth_consumer_registry
             WHERE ocr_consumer_key = \'%s\'
             AND ocr_usa_id_ref = %d
             AND ocr_server_uri = \'%s\'
@@ -334,7 +334,7 @@ abstract class OAuthStoreJSQL extends OAuthStoreAbstract
     {
       $ocr_id = $this->query_one('
             SELECT ocr_id
-            FROM oauth_consumer_registry
+            FROM #__ac_oauth_consumer_registry
             WHERE ocr_consumer_key = \'%s\'
             AND ocr_usa_id_ref = %d
             ', $consumer_key, $user_id);
@@ -357,7 +357,7 @@ abstract class OAuthStoreJSQL extends OAuthStoreAbstract
 
     // Delete any old tokens with the same type and name for this user/server combination
     $this->query('
-          DELETE FROM oauth_consumer_token
+          DELETE FROM #__ac_oauth_consumer_token
           WHERE oct_ocr_id_ref = %d
             AND oct_usa_id_ref = %d
             AND oct_token_type = LOWER(\'%s\')
@@ -370,7 +370,7 @@ abstract class OAuthStoreJSQL extends OAuthStoreAbstract
 
     // Insert the new token
     $this->query('
-          INSERT IGNORE INTO oauth_consumer_token
+          INSERT IGNORE INTO #__ac_oauth_consumer_token
           SET oct_ocr_id_ref  = %d,
             oct_usa_id_ref  = %d,
             oct_name    = \'%s\',
@@ -406,7 +406,7 @@ abstract class OAuthStoreJSQL extends OAuthStoreAbstract
     if ($user_is_admin)
     {
       $this->query('
-          DELETE FROM oauth_consumer_registry
+          DELETE FROM #__ac_oauth_consumer_registry
           WHERE ocr_consumer_key = \'%s\'
             AND (ocr_usa_id_ref = %d OR ocr_usa_id_ref IS NULL)
           ', $consumer_key, $user_id);
@@ -414,7 +414,7 @@ abstract class OAuthStoreJSQL extends OAuthStoreAbstract
     else
     {
       $this->query('
-          DELETE FROM oauth_consumer_registry
+          DELETE FROM #__ac_oauth_consumer_registry
           WHERE ocr_consumer_key = \'%s\'
             AND ocr_usa_id_ref   = %d
           ', $consumer_key, $user_id);
@@ -443,7 +443,7 @@ abstract class OAuthStoreJSQL extends OAuthStoreAbstract
             ocr_request_token_uri as request_token_uri,
             ocr_authorize_uri   as authorize_uri,
             ocr_access_token_uri  as access_token_uri
-        FROM oauth_consumer_registry
+        FROM #__ac_oauth_consumer_registry
         WHERE ocr_consumer_key = \'%s\'
           AND (ocr_usa_id_ref = %d OR ocr_usa_id_ref IS NULL)
         ',  $consumer_key, $user_id);
@@ -499,7 +499,7 @@ abstract class OAuthStoreJSQL extends OAuthStoreAbstract
               ocr_request_token_uri as request_token_uri,
               ocr_authorize_uri   as authorize_uri,
               ocr_access_token_uri  as access_token_uri
-          FROM oauth_consumer_registry
+          FROM #__ac_oauth_consumer_registry
           WHERE ocr_server_uri_host = \'%s\'
             AND ocr_server_uri_path = LEFT(\'%s\', LENGTH(ocr_server_uri_path))
             AND (ocr_usa_id_ref = \'%d\' OR ocr_usa_id_ref IS NULL)
@@ -540,7 +540,7 @@ abstract class OAuthStoreJSQL extends OAuthStoreAbstract
               ocr_authorize_uri   as authorize_uri,
               ocr_access_token_uri  as access_token_uri,
               oct_timestamp     as timestamp
-          FROM oauth_consumer_registry
+          FROM #__ac_oauth_consumer_registry
               JOIN oauth_consumer_token
               ON oct_ocr_id_ref = ocr_id
           WHERE oct_usa_id_ref = %d
@@ -562,7 +562,7 @@ abstract class OAuthStoreJSQL extends OAuthStoreAbstract
   {
     $count = $this->query_one('
           SELECT COUNT(oct_id)
-          FROM oauth_consumer_token
+          FROM #__ac_oauth_consumer_token
               JOIN oauth_consumer_registry
               ON oct_ocr_id_ref = ocr_id
           WHERE oct_token_type   = \'access\'
@@ -599,7 +599,7 @@ abstract class OAuthStoreJSQL extends OAuthStoreAbstract
               ocr_authorize_uri   as authorize_uri,
               ocr_access_token_uri  as access_token_uri,
               oct_timestamp     as timestamp
-          FROM oauth_consumer_registry
+          FROM #__ac_oauth_consumer_registry
               JOIN oauth_consumer_token
               ON oct_ocr_id_ref = ocr_id
           WHERE ocr_consumer_key = \'%s\'
@@ -631,7 +631,7 @@ abstract class OAuthStoreJSQL extends OAuthStoreAbstract
     {
       $this->query('
         DELETE oauth_consumer_token 
-        FROM oauth_consumer_token
+        FROM #__ac_oauth_consumer_token
             JOIN oauth_consumer_registry
             ON oct_ocr_id_ref = ocr_id
         WHERE ocr_consumer_key  = \'%s\'
@@ -642,7 +642,7 @@ abstract class OAuthStoreJSQL extends OAuthStoreAbstract
     {
       $this->query('
         DELETE oauth_consumer_token 
-        FROM oauth_consumer_token
+        FROM #__ac_oauth_consumer_token
             JOIN oauth_consumer_registry
             ON oct_ocr_id_ref = ocr_id
         WHERE ocr_consumer_key  = \'%s\'
@@ -672,7 +672,7 @@ abstract class OAuthStoreJSQL extends OAuthStoreAbstract
     {
       // Set maximum time to live for this token
       $this->query('
-            UPDATE oauth_consumer_token, oauth_consumer_registry
+            UPDATE #__ac_oauth_consumer_token, #__ac_oauth_consumer_registry
             SET ost_token_ttl = DATE_ADD(NOW(), INTERVAL %d SECOND)
             WHERE ocr_consumer_key  = \'%s\'
               AND oct_ocr_id_ref    = ocr_id
@@ -728,7 +728,7 @@ abstract class OAuthStoreJSQL extends OAuthStoreAbstract
               ocr_request_token_uri as request_token_uri,
               ocr_authorize_uri   as authorize_uri,
               ocr_access_token_uri  as access_token_uri
-          FROM oauth_consumer_registry
+          FROM #__ac_oauth_consumer_registry
           '.$where.'
           ORDER BY ocr_server_uri_host, ocr_server_uri_path
           ', $args);
@@ -761,7 +761,7 @@ abstract class OAuthStoreJSQL extends OAuthStoreAbstract
     {
       $exists = $this->query_one('
             SELECT ocr_id
-            FROM oauth_consumer_registry
+            FROM #__ac_oauth_consumer_registry
             WHERE ocr_consumer_key = \'%s\'
               AND ocr_id <> %d
               AND (ocr_usa_id_ref = %d OR ocr_usa_id_ref IS NULL)
@@ -771,7 +771,7 @@ abstract class OAuthStoreJSQL extends OAuthStoreAbstract
     {
       $exists = $this->query_one('
             SELECT ocr_id
-            FROM oauth_consumer_registry
+            FROM #__ac_oauth_consumer_registry
             WHERE ocr_consumer_key = \'%s\'
               AND (ocr_usa_id_ref = %d OR ocr_usa_id_ref IS NULL)
             ', $server['consumer_key'], $user_id);
@@ -822,7 +822,7 @@ abstract class OAuthStoreJSQL extends OAuthStoreAbstract
       {
         $ocr_usa_id_ref = $this->query_one('
                   SELECT ocr_usa_id_ref
-                  FROM oauth_consumer_registry
+                  FROM #__ac_oauth_consumer_registry
                   WHERE ocr_id = %d
                   ', $server['id']);
         
@@ -834,7 +834,7 @@ abstract class OAuthStoreJSQL extends OAuthStoreAbstract
       
       // Update the consumer registration 
       $this->query('
-          UPDATE oauth_consumer_registry
+          UPDATE #__ac_oauth_consumer_registry
           SET ocr_consumer_key      = \'%s\',
             ocr_consumer_secret   = \'%s\',
             ocr_server_uri        = \'%s\',
@@ -869,7 +869,7 @@ abstract class OAuthStoreJSQL extends OAuthStoreAbstract
       }
 
       $this->query('
-          INSERT INTO oauth_consumer_registry
+          INSERT INTO #__ac_oauth_consumer_registry
           SET ocr_consumer_key      = \'%s\',
             ocr_consumer_secret   = \'%s\',
             ocr_server_uri        = \'%s\',
