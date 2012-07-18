@@ -45,19 +45,19 @@ class OAuthRequest
   public $param = array();
 
 	/* the parsed request uri */
-	protected $uri_parts;
+	public $uri_parts;
 
 	/* the raw request uri */
-	protected $uri;
+	public $uri;
 
 	/* the request headers */
-	protected $headers;
+	public $headers;
 
 	/* the request method */
-	protected $method;
+	public $method;
 	
 	/* the body of the OAuth request */
-	protected $body;
+	public $body;
 	
 
 	/**
