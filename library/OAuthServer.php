@@ -100,7 +100,7 @@ class OAuthServer extends OAuthRequestVerifier
 	 * 
 	 * TODO: add correct result code to exception
 	 * 
-	 * @return string 	returned request token, false on an error
+	 * @return array returned request token and secret, false on an error
 	 */
 	public function requestToken ()
 	{
@@ -152,7 +152,11 @@ class OAuthServer extends OAuthRequestVerifier
 		}
 
 		OAuthRequestLogger::flush();
-		return $request_token;
+
+		if(is_string($request_token)) 
+      return $token;
+    else
+      return $request_token;
 	}
 	
 	
@@ -277,7 +281,7 @@ class OAuthServer extends OAuthRequestVerifier
 	 * Exchange a request token for an access token.
 	 * The exchange is only succesful iff the request token has been authorized.
 	 * 
-	 * Never returns, calls exit() when token is exchanged or when error is returned.
+	 * @return array A token and token secret.
 	 */
 	public function accessToken ()
 	{
@@ -324,7 +328,7 @@ class OAuthServer extends OAuthRequestVerifier
 		}
 		
 		OAuthRequestLogger::flush();
-		exit();
+		return $token;
 	}	
 }
 
