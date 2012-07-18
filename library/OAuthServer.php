@@ -105,6 +105,8 @@ class OAuthServer extends OAuthRequestVerifier
 	public function requestToken ()
 	{
 		OAuthRequestLogger::start($this);
+    $token = array();
+    
 		try
 		{
 			$this->verify(false);
@@ -286,6 +288,7 @@ class OAuthServer extends OAuthRequestVerifier
 	public function accessToken ()
 	{
 		OAuthRequestLogger::start($this);
+    $token = array();
 
 		try
 		{
