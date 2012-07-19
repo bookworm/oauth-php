@@ -1606,7 +1606,7 @@ abstract class OAuthStoreJSQL extends OAuthStoreAbstract
   public function checkServerNonce ( $consumer_key, $token, $timestamp, $nonce )
   {
     $r = $this->query_row('
-              SELECT MAX(osn_timestamp), MAX(osn_timestamp) > %d + %d
+              SELECT MAX(osn_timestamp), MAX(osn_timestamp) > %f + %f
               FROM #__ac_oauth_server_nonce
               WHERE osn_consumer_key = \'%s\'
                 AND osn_token        = \'%s\'
@@ -1622,7 +1622,7 @@ abstract class OAuthStoreJSQL extends OAuthStoreAbstract
         INSERT IGNORE INTO #__ac_oauth_server_nonce
         SET osn_consumer_key  = \'%s\',
           osn_token     = \'%s\',
-          osn_timestamp   = %d,
+          osn_timestamp   = %filectime(filename),
           osn_nonce     = \'%s\'
         ', $consumer_key, $token, $timestamp, $nonce);
     
@@ -1636,7 +1636,7 @@ abstract class OAuthStoreJSQL extends OAuthStoreAbstract
         DELETE FROM #__ac_oauth_server_nonce
         WHERE osn_consumer_key  = \'%s\'
           AND osn_token     = \'%s\'
-          AND osn_timestamp     < %d - %d
+          AND osn_timestamp     < %f - %f
         ', $consumer_key, $token, $timestamp, $this->max_timestamp_skew);
   }
 
