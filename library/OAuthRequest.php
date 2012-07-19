@@ -105,6 +105,16 @@ class OAuthRequest
 		}
 		$headers      = OAuthRequestLogger::getAllHeaders();
 		$this->method = strtoupper($method);
+
+    switch($this->method) 
+    {
+      case 'GET':
+        $parameters = array_merge($_GET, $parameters);
+        break;
+      case 'POST':
+        $parameters = array_merge($_POST, $parameters);
+        break;
+    }
 		
 		// If this is a post then also check the posted variables
 		if (strcasecmp($method, 'POST') == 0)
