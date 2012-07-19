@@ -1622,7 +1622,7 @@ abstract class OAuthStoreJSQL extends OAuthStoreAbstract
         INSERT IGNORE INTO #__ac_oauth_server_nonce
         SET osn_consumer_key  = \'%s\',
           osn_token     = \'%s\',
-          osn_timestamp   = %filectime(filename),
+          osn_timestamp   = %f,
           osn_nonce     = \'%s\'
         ', $consumer_key, $token, $timestamp, $nonce);
     
