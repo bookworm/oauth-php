@@ -377,7 +377,7 @@ abstract class OAuthStoreJSQL extends OAuthStoreAbstract
             oct_token   = \'%s\',
             oct_token_secret= \'%s\',
             oct_token_type  = LOWER(\'%s\'),
-            oct_timestamp = %d,
+            oct_timestamp = NOW(),
             oct_token_ttl = '.$ttl.'
           ',
           $ocr_id,
@@ -385,7 +385,6 @@ abstract class OAuthStoreJSQL extends OAuthStoreAbstract
           $name,
           $token,
           $token_secret,
-          microtime(),
           $token_type);
     
     if (!$this->query_affected_rows())
@@ -841,7 +840,7 @@ abstract class OAuthStoreJSQL extends OAuthStoreAbstract
             ocr_server_uri        = \'%s\',
             ocr_server_uri_host   = \'%s\',
             ocr_server_uri_path   = \'%s\',
-            ocr_timestamp         = %d,
+            ocr_timestamp         = NOW(),
             ocr_request_token_uri = \'%s\',
             ocr_authorize_uri   = \'%s\',
             ocr_access_token_uri  = \'%s\',
@@ -854,7 +853,6 @@ abstract class OAuthStoreJSQL extends OAuthStoreAbstract
           $server['server_uri'],
           strtolower($host),
           $path,
-          microtime(),
           isset($server['request_token_uri']) ? $server['request_token_uri'] : '',
           isset($server['authorize_uri'])     ? $server['authorize_uri']     : '',
           isset($server['access_token_uri'])  ? $server['access_token_uri']  : '',
@@ -877,7 +875,7 @@ abstract class OAuthStoreJSQL extends OAuthStoreAbstract
             ocr_server_uri        = \'%s\',
             ocr_server_uri_host   = \'%s\',
             ocr_server_uri_path   = \'%s\',
-            ocr_timestamp         = %d,
+            ocr_timestamp         = NOW(),
             ocr_request_token_uri = \'%s\',
             ocr_authorize_uri   = \'%s\',
             ocr_access_token_uri  = \'%s\',
@@ -888,7 +886,6 @@ abstract class OAuthStoreJSQL extends OAuthStoreAbstract
           $server['server_uri'],
           strtolower($host),
           $path,
-          microtime(),
           isset($server['request_token_uri']) ? $server['request_token_uri'] : '',
           isset($server['authorize_uri'])     ? $server['authorize_uri']     : '',
           isset($server['access_token_uri'])  ? $server['access_token_uri']  : '',
@@ -988,7 +985,7 @@ abstract class OAuthStoreJSQL extends OAuthStoreAbstract
           osr_application_notes = \'%s\',
           osr_application_type  = \'%s\',
           osr_application_commercial = IF(%d,1,0),
-          osr_timestamp     = %d
+          osr_timestamp     = NOW()
         WHERE osr_id              = %d
           AND osr_consumer_key    = \'%s\'
           AND osr_consumer_secret = \'%s\'
@@ -1002,7 +999,6 @@ abstract class OAuthStoreJSQL extends OAuthStoreAbstract
         isset($consumer['application_notes']) ? $consumer['application_notes']     : '',
         isset($consumer['application_type'])  ? $consumer['application_type']      : '',
         isset($consumer['application_commercial']) ? $consumer['application_commercial'] : 0,
-        microtime(),
         $consumer['id'],
         $consumer['consumer_key'],
         $consumer['consumer_secret']
@@ -1050,7 +1046,7 @@ abstract class OAuthStoreJSQL extends OAuthStoreAbstract
           osr_application_notes = \'%s\',
           osr_application_type  = \'%s\',
           osr_application_commercial = IF(%d,1,0),
-          osr_timestamp     = %d,
+          osr_timestamp     = NOW(),
           osr_issue_date      = NOW()
         ',
         $owner_id,
@@ -1065,7 +1061,6 @@ abstract class OAuthStoreJSQL extends OAuthStoreAbstract
         isset($consumer['application_notes']) ? $consumer['application_notes']     : '',
         isset($consumer['application_type'])  ? $consumer['application_type']      : '',
         isset($consumer['application_commercial']) ? $consumer['application_commercial'] : 0,
-        microtime()
         );
     }
     return $consumer_key;
@@ -1241,8 +1236,8 @@ abstract class OAuthStoreJSQL extends OAuthStoreAbstract
           ost_token_type    = VALUES(ost_token_type),
           ost_token_ttl       = VALUES(ost_token_ttl),
           ost_callback_url    = VALUES(ost_callback_url),
-          ost_timestamp   = %d
-        ', $osr_id, $token, $secret, $ttl, $options['oauth_callback'], microtime());
+          ost_timestamp   = NOW()
+        ', $osr_id, $token, $secret, $ttl, $options['oauth_callback']);
     
     return array('token'=>$token, 'token_secret'=>$secret, 'token_ttl'=>$ttl);
   }
