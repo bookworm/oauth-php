@@ -51,20 +51,23 @@ class OAuthRequestVerifier extends OAuthRequest
 	 */
 	function __construct ( $uri = null, $method = null, $params = null )
 	{
-    switch(strtoupper($_SERVER['REQUEST_METHOD']))
+    if(isset($_SERVER['REQUEST_METHOD']))
     {
-      case 'GET':
-        if($params) 
-          $params = $_GET;
-        else
-          $params = array_merge($_GET, $params);       
-         break;
-      case 'POST':
-        if($params) 
-          $params = $_POST;
-        else
-          $params = array_merge($_POST, $params);
-        break;
+      switch(strtoupper($_SERVER['REQUEST_METHOD']))
+      {
+        case 'GET':
+          if($params) 
+            $params = $_GET;
+          else
+            $params = array_merge($_GET, $params);       
+           break;
+        case 'POST':
+          if($params) 
+            $params = $_POST;
+          else
+            $params = array_merge($_POST, $params);
+          break;
+      }
     }
 
  		if ($params) {
