@@ -1060,7 +1060,7 @@ abstract class OAuthStoreJSQL extends OAuthStoreAbstract
         isset($consumer['application_descr']) ? $consumer['application_descr']     : '',
         isset($consumer['application_notes']) ? $consumer['application_notes']     : '',
         isset($consumer['application_type'])  ? $consumer['application_type']      : '',
-        isset($consumer['application_commercial']) ? $consumer['application_commercial'] : 0,
+        isset($consumer['application_commercial']) ? $consumer['application_commercial'] : 0
         );
     }
     return $consumer_key;
