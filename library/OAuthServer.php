@@ -136,8 +136,6 @@ class OAuthServer extends OAuthRequestVerifier
 			}
 
 			$request_token = $token['token'];
-
-			return $result;
 		}
 		catch (OAuthException2 $e)
 		{
