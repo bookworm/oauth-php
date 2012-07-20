@@ -106,46 +106,35 @@ class OAuthServer extends OAuthRequestVerifier
 	{
 		OAuthRequestLogger::start($this);
     $token = array();
-    
-		try
+
+		$this->verify(false);
+		
+		$options = array();
+		$ttl     = $this->getParam('xoauth_token_ttl', false);
+		if ($ttl)
 		{
-			$this->verify(false);
-			
-			$options = array();
-			$ttl     = $this->getParam('xoauth_token_ttl', false);
-			if ($ttl)
-			{
-				$options['token_ttl'] = $ttl;
-			}
-
- 			// 1.0a Compatibility : associate callback url to the request token
- 			$cbUrl   = $this->getParam('oauth_callback', true);
- 			if ($cbUrl) {
- 				$options['oauth_callback'] = $cbUrl;
- 			}
-			
-			// Create a request token
-			$store  = OAuthStore::instance();
-			$token  = $store->addConsumerRequestToken($this->getParam('oauth_consumer_key', true), $options);
-			$result = 'oauth_callback_confirmed=1&oauth_token='.$this->urlencode($token['token'])
-					.'&oauth_token_secret='.$this->urlencode($token['token_secret']);
-
-			if (!empty($token['token_ttl']))
-			{
-				$result .= '&xoauth_token_ttl='.$this->urlencode($token['token_ttl']);
-			}
-
-			$request_token = $token['token'];
+			$options['token_ttl'] = $ttl;
 		}
-		catch (OAuthException2 $e)
+
+			// 1.0a Compatibility : associate callback url to the request token
+			$cbUrl   = $this->getParam('oauth_callback', true);
+			if ($cbUrl) {
+				$options['oauth_callback'] = $cbUrl;
+			}
+		
+		// Create a request token
+		$store  = OAuthStore::instance();
+		$token  = $store->addConsumerRequestToken($this->getParam('oauth_consumer_key', true), $options);
+		$result = 'oauth_callback_confirmed=1&oauth_token='.$this->urlencode($token['token'])
+				.'&oauth_token_secret='.$this->urlencode($token['token_secret']);
+
+		if (!empty($token['token_ttl']))
 		{
-			$request_token = false;
-
-			header('HTTP/1.1 401 Unauthorized');
-			header('Content-Type: text/plain');
-
-			return "OAuth Verification Failed: " . $e->getMessage();
+			$result .= '&xoauth_token_ttl='.$this->urlencode($token['token_ttl']);
 		}
+
+		$request_token = $token['token'];
+		
 
 		OAuthRequestLogger::flush();
 
@@ -284,41 +273,25 @@ class OAuthServer extends OAuthRequestVerifier
 		OAuthRequestLogger::start($this);
     $token = array();
 
-		try
-		{
-			$this->verify('request');
+		$this->verify('request');
 
-			$options = array();
-			$ttl     = $this->getParam('xoauth_token_ttl', false);
-			if ($ttl)
-			{
-				$options['token_ttl'] = $ttl;
-			}
+		$options = array();
+		$ttl     = $this->getParam('xoauth_token_ttl', false);
+		if($ttl)
+			$options['token_ttl'] = $ttl;
 
-			$verifier = $this->getParam('oauth_verifier', false);
- 			if ($verifier) {
- 				$options['verifier'] = $verifier;
- 			}
-			
-			$store  = OAuthStore::instance();
-			$token  = $store->exchangeConsumerRequestForAccessToken($this->getParam('oauth_token', true), $options);
-			$result = 'oauth_token='.$this->urlencode($token['token'])
-					.'&oauth_token_secret='.$this->urlencode($token['token_secret']);
-					
-			if (!empty($token['token_ttl']))
-			{
-				$result .= '&xoauth_token_ttl='.$this->urlencode($token['token_ttl']);
-			}
-
-		}
-		catch (OAuthException2 $e)
-		{
-			header('HTTP/1.1 401 Access Denied');
-			header('Content-Type: text/plain');
-
-			return "OAuth Verification Failed: " . $e->getMessage();
-		}
+		$verifier = $this->getParam('oauth_verifier', false);
+		if($verifier) 
+			$options['verifier'] = $verifier;
 		
+		$store  = OAuthStore::instance();
+		$token  = $store->exchangeConsumerRequestForAccessToken($this->getParam('oauth_token', true), $options);
+		$result = 'oauth_token='.$this->urlencode($token['token'])
+				.'&oauth_token_secret='.$this->urlencode($token['token_secret']);
+				
+		if(!empty($token['token_ttl']))
+			$result .= '&xoauth_token_ttl='.$this->urlencode($token['token_ttl']);
+
 		OAuthRequestLogger::flush();
 
 		return $token;
