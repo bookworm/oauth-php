@@ -136,12 +136,8 @@ class OAuthServer extends OAuthRequestVerifier
 			}
 
 			$request_token = $token['token'];
-			
-			header('HTTP/1.1 200 OK');
-			header('Content-Length: '.strlen($result));
-			header('Content-Type: application/x-www-form-urlencoded');
 
-			echo $result;
+			return $result;
 		}
 		catch (OAuthException2 $e)
 		{
@@ -150,7 +146,7 @@ class OAuthServer extends OAuthRequestVerifier
 			header('HTTP/1.1 401 Unauthorized');
 			header('Content-Type: text/plain');
 
-			echo "OAuth Verification Failed: " . $e->getMessage();
+			return "OAuth Verification Failed: " . $e->getMessage();
 		}
 
 		OAuthRequestLogger::flush();
