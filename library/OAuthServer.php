@@ -309,22 +309,18 @@ class OAuthServer extends OAuthRequestVerifier
 			{
 				$result .= '&xoauth_token_ttl='.$this->urlencode($token['token_ttl']);
 			}
-					
-			header('HTTP/1.1 200 OK');
-			header('Content-Length: '.strlen($result));
-			header('Content-Type: application/x-www-form-urlencoded');
 
-			echo $result;
 		}
 		catch (OAuthException2 $e)
 		{
 			header('HTTP/1.1 401 Access Denied');
 			header('Content-Type: text/plain');
 
-			echo "OAuth Verification Failed: " . $e->getMessage();
+			return "OAuth Verification Failed: " . $e->getMessage();
 		}
 		
 		OAuthRequestLogger::flush();
+
 		return $token;
 	}	
 }
