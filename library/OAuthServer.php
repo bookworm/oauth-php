@@ -91,16 +91,17 @@ class OAuthServer extends OAuthRequestVerifier
 	 	if(array_key_exists('disallowed_uri_schemes', $options) && is_array($options['disallowed_uri_schemes']))
 	 		$this->disallowed_uri_schemes = $options['disallowed_uri_schemes'];
 	}
+
 	
 	/**
 	 * Handle the request_token request.
 	 * Returns the new request token and request token secret.
-	 * 
-	 * TODO: add correct result code to exception
-	 * 
-	 * @return array returned request token and secret, false on an error
+   *
+   * @param boolean $justToken  Return just the request token? Defaults to false
+   * @param boolean $urlEncoded Should we return an $urlEncoded string Defaults to true
+   * @return mixed Either 1. An array of the oauth params or 2. A URL encoded string of OAuth params
 	 */
-	public function requestToken()
+	public function requestToken($justToken=false, $urlEncoded=true)
 	{
 		OAuthRequestLogger::start($this);
     $token = array();
@@ -120,21 +121,83 @@ class OAuthServer extends OAuthRequestVerifier
 		// Create a request token
 		$store  = OAuthStore::instance();
 		$token  = $store->addConsumerRequestToken($this->getParam('oauth_consumer_key', true), $options);
-		$result = 'oauth_callback_confirmed=1&oauth_token='.$this->urlencode($token['token'])
-    	.'&oauth_token_secret='.$this->urlencode($token['token_secret']);
 
-		if(!empty($token['token_ttl']))
-			$result .= '&xoauth_token_ttl='.$this->urlencode($token['token_ttl']);
+    if($urlEncoded)
+    {
+      $result = 'oauth_callback_confirmed=1&oauth_token='.$this->urlencode($token['token'])
+      .'&oauth_token_secret='.$this->urlencode($token['token_secret']);
 
-		$request_token = $token['token'];
+      if(!empty($token['token_ttl']))
+        $result .= '&xoauth_token_ttl='.$this->urlencode($token['token_ttl']);
+    }
+    else
+    {
+      $t      = $token;
+      $result = array('oauth_callback_confirmed' => '1', 'oauth_token' => $t['token'], 'oauth_token_secret' => $t['token_secret']);
+
+      if(!empty($token['token_ttl']))
+        $result['xoauth_token_ttl'] = $t['token_ttl'];
+    }
 
 		OAuthRequestLogger::flush();
 
-		if(is_string($request_token)) 
-      return $token;
-    else
-      return $request_token;
+    if($justToken) 
+      return $token['token'];
+
+    return $result;
 	}
+
+  /**
+   * Exchange a request token for an access token.
+   * The exchange is only succesful iff the request token has been authorized.
+   * 
+   * @param boolean $justToken  Return just the access token? Defaults to false
+   * @param boolean $urlEncoded Should we return an $urlEncoded string Defaults to true
+   * @return mixed Either 1. An array of the oauth params or 2. A URL encoded string of OAuth params   
+   */
+  public function accessToken($justToken=false, $urlEncoded=true)
+  {
+    OAuthRequestLogger::start($this);
+    $token = array();
+
+    $this->verify('request');
+
+    $options = array();
+    $ttl     = $this->getParam('xoauth_token_ttl', false);
+    if($ttl)
+      $options['token_ttl'] = $ttl;
+
+    $verifier = $this->getParam('oauth_verifier', false);
+    if($verifier) 
+      $options['verifier'] = $verifier;
+    
+    $store  = OAuthStore::instance();
+    $token  = $store->exchangeConsumerRequestForAccessToken($this->getParam('oauth_token', true), $options);
+
+    if($urlEncoded)
+    {
+      $result = 'oauth_token='.$this->urlencode($token['token'])
+      .'&oauth_token_secret='.$this->urlencode($token['token_secret']);
+
+      if(!empty($token['token_ttl']))
+        $result .= '&xoauth_token_ttl='.$this->urlencode($token['token_ttl']);
+    }
+    else
+    {
+      $t      = $token;
+      $result = array('oauth_token' => $t['token'], 'oauth_token_secret' => $t['token_secret']);
+
+      if(!empty($token['token_ttl']))
+        $result['xoauth_token_ttl'] = $t['token_ttl'];
+    }
+
+    OAuthRequestLogger::flush();
+
+    if($justToken) 
+      return $token['token'];
+
+    return $result;
+  } 
 	
 	/**
 	 * Verify the start of an authorization request.  Verifies if the request token is valid.
@@ -242,39 +305,4 @@ class OAuthServer extends OAuthRequestVerifier
 		OAuthRequestLogger::flush();
 		return $verifier;
 	}
-	
-	/**
-	 * Exchange a request token for an access token.
-	 * The exchange is only succesful iff the request token has been authorized.
-	 * 
-	 * @return array A token and token secret.
-	 */
-	public function accessToken()
-	{
-		OAuthRequestLogger::start($this);
-    $token = array();
-
-		$this->verify('request');
-
-		$options = array();
-		$ttl     = $this->getParam('xoauth_token_ttl', false);
-		if($ttl)
-			$options['token_ttl'] = $ttl;
-
-		$verifier = $this->getParam('oauth_verifier', false);
-		if($verifier) 
-			$options['verifier'] = $verifier;
-		
-		$store  = OAuthStore::instance();
-		$token  = $store->exchangeConsumerRequestForAccessToken($this->getParam('oauth_token', true), $options);
-		$result = 'oauth_token='.$this->urlencode($token['token'])
-				.'&oauth_token_secret='.$this->urlencode($token['token_secret']);
-				
-		if(!empty($token['token_ttl']))
-			$result .= '&xoauth_token_ttl='.$this->urlencode($token['token_ttl']);
-
-		OAuthRequestLogger::flush();
-
-		return $token;
-	}	
 }
