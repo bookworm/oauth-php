@@ -29,7 +29,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
 abstract class OAuthSignatureMethod
 {
 	/**
@@ -48,7 +47,7 @@ abstract class OAuthSignatureMethod
 	 * @param string token_secret
 	 * @return string  
 	 */
-	abstract public function signature ( $request, $base_string, $consumer_secret, $token_secret );
+	abstract public function signature($request, $base_string, $consumer_secret, $token_secret);
 
 	/**
 	 * Check if the request signature corresponds to the one calculated for the request.
@@ -60,10 +59,5 @@ abstract class OAuthSignatureMethod
 	 * @param string signature		from the request, still urlencoded
 	 * @return string
 	 */
-	abstract public function verify ( $request, $base_string, $consumer_secret, $token_secret, $signature );
+	abstract public function verify($request, $base_string, $consumer_secret, $token_secret, $signature);
 }
-
-
-/* vi:set ts=4 sts=4 sw=4 binary noeol: */
-
-?>

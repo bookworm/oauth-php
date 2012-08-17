@@ -41,12 +41,12 @@ class OAuthSession
 	/**
 	 * Request an instance of the OAuthSession
 	 */
-	public static function instance ( $store = 'SESSION', $options = array() )
+	public static function instance($store = 'SESSION', $options = array())
 	{
-	    if (!OAuthSession::$instance)
-	    {
+    if(!OAuthSession::$instance)
+    {
 			// Select the store you want to use
-			if (strpos($store, '/') === false)
+			if(strpos($store, '/') === false)
 			{
 				$class = 'OAuthSession'.$store;
 				$file  = dirname(__FILE__) . '/session/'.$class.'.php';
@@ -58,29 +58,19 @@ class OAuthSession
 				$class = $store;
 			}
 
-			if (is_file($file))
+			if(is_file($file))
 			{
 				require_once $file;
 				
-				if (class_exists($class))
-				{
+				if(class_exists($class))
 					OAuthSession::$instance = new $class($options);
-				}
 				else
-				{
 					throw new OAuthException2('Could not find class '.$class.' in file '.$file);
-				}
 			}
 			else
-			{
 				throw new OAuthException2('No OAuthSession for '.$store.' (file '.$file.')');
-			}
-	    }
-	    return OAuthSession::$instance;	
+    }
+
+    return OAuthSession::$instance;	
 	}
 }
-
-
-/* vi:set ts=4 sts=4 sw=4 binary noeol: */
-
-?>

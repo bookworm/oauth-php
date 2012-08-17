@@ -30,7 +30,6 @@
  * THE SOFTWARE.
  */
 
-
 require_once dirname(__FILE__) . '/OAuthException2.php';
 
 /**
@@ -59,93 +58,80 @@ class OAuthRequest
 	/* the body of the OAuth request */
 	public $body;
 	
-
 	/**
 	 * Construct from the current request. Useful for checking the signature of a request.
 	 * When not supplied with any parameters this will use the current request.
 	 * 
-	 * @param string	uri				might include parameters
-	 * @param string	method			GET, PUT, POST etc.
-	 * @param string	parameters		additional post parameters, urlencoded (RFC1738)
-	 * @param array		headers			headers for request
-	 * @param string	body			optional body of the OAuth request (POST or PUT)
+	 * @param string	uri				 might include parameters
+	 * @param string	method		 GET, PUT, POST etc.
+	 * @param string	parameters additional post parameters, urlencoded (RFC1738)
+	 * @param array		headers		 headers for request
+	 * @param string	body			 optional body of the OAuth request (POST or PUT)
 	 */
-	function __construct ( $uri = null, $method = null, $parameters = '', $headers = array(), $body = null )
+	function __construct($uri = null, $method = null, $parameters = '', $headers = array(), $body = null)
 	{
-		if (is_object($_SERVER))
+		if(is_object($_SERVER))
 		{
-			// Tainted arrays - the normal stuff in anyMeta
-			if (!$method) {
+			if(!$method)
 				$method	= $_SERVER->REQUEST_METHOD->getRawUnsafe();
-			}
-			if (empty($uri)) {
+			if(empty($uri))
 				$uri	= $_SERVER->REQUEST_URI->getRawUnsafe();
-			}
 		}
 		else
 		{
 			// non anyMeta systems
-			if (!$method) {
-				if (isset($_SERVER['REQUEST_METHOD'])) {
+			if(!$method)
+      {
+				if(isset($_SERVER['REQUEST_METHOD']))
 					$method	= $_SERVER['REQUEST_METHOD'];
-				}
-				else {
+				else
 					$method = 'GET';
-				}
 			}
+
 			$proto = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https' : 'http';
-			if (empty($uri)) {
-				if (strpos($_SERVER['REQUEST_URI'], "://") !== false) {
+			if(empty($uri)) 
+      {
+				if(strpos($_SERVER['REQUEST_URI'], "://") !== false)
 					$uri = $_SERVER['REQUEST_URI'];
-				}
-				else {
+				else
 					$uri = sprintf('%s://%s%s', $proto, $_SERVER['HTTP_HOST'], $_SERVER['REQUEST_URI']);
-				}
 			}
 		}
+
 		$headers      = OAuthRequestLogger::getAllHeaders();
 		$this->method = strtoupper($method);
 
 		// If this is a post then also check the posted variables
-		if (strcasecmp($method, 'POST') == 0)
+		if(strcasecmp($method, 'POST') == 0)
 		{
 			// TODO: what to do with 'multipart/form-data'?
-			if ($this->getRequestContentType() == 'multipart/form-data')
+			if($this->getRequestContentType() == 'multipart/form-data')
 			{
 				// Get the posted body (when available)
-				if (!isset($headers['X-OAuth-Test']))
-				{
+				if(!isset($headers['X-OAuth-Test']))
 					$parameters .= $this->getRequestBodyOfMultipart();
-				}
 			}
-			if ($this->getRequestContentType() == 'application/x-www-form-urlencoded')
+			if($this->getRequestContentType() == 'application/x-www-form-urlencoded')
 			{
 				// Get the posted body (when available)
-				if (!isset($headers['X-OAuth-Test']))
-				{
+				if(!isset($headers['X-OAuth-Test']))
 					$parameters .= $this->getRequestBody();
-				}
 			}
 			else
-			{
 				$body = $this->getRequestBody();
-			}
 		}
-		else if (strcasecmp($method, 'PUT') == 0)
-		{
+		else if(strcasecmp($method, 'PUT') == 0)
 			$body = $this->getRequestBody();
-		}
 
 		$this->method  = strtoupper($method);
 		$this->headers = $headers;
-		// Store the values, prepare for oauth
 		$this->uri     = $uri;
 		$this->body    = $body;
+
 		$this->parseUri($parameters);
 		$this->parseHeaders();
 		$this->transcodeParams();
 	}
-
 
 	/**
 	 * Return the signature base string.
@@ -153,16 +139,15 @@ class OAuthRequest
 	 * 
 	 * @return string
 	 */
-	function signatureBaseString ()
+	function signatureBaseString()
 	{
-		$sig 	= array();
+		$sig 	  = array();
 		$sig[]	= $this->method;
 		$sig[]	= $this->getRequestUrl();
 		$sig[]	= $this->getNormalizedParams();
 		
 		return implode('&', array_map(array($this, 'urlencode'), $sig));
 	}
-	
 	
 	/**
 	 * Calculate the signature of the request, using the method in oauth_signature_method.
@@ -175,36 +160,32 @@ class OAuthRequest
 	 * @exception when not all parts available
 	 * @return string
 	 */
-	function calculateSignature ( $consumer_secret, $token_secret, $token_type = 'access' )
+	function calculateSignature($consumer_secret, $token_secret, $token_type = 'access')
 	{
 		$required = array(
-						'oauth_consumer_key',
-						'oauth_signature_method',
-						'oauth_timestamp',
-						'oauth_nonce'
-					);
+			'oauth_consumer_key',
+			'oauth_signature_method',
+			'oauth_timestamp',
+			'oauth_nonce'
+		);
 
-		if ($token_type != 'requestToken')
-		{
+		if($token_type != 'requestToken')
 			$required[] = 'oauth_token';
-		}
 
-		foreach ($required as $req)
+		foreach($required as $req)
 		{
-			if (!isset($this->param[$req]))
-			{
+			if(!isset($this->param[$req]))
 				throw new OAuthException2('Can\'t sign request, missing parameter "'.$req.'"');
-			}
 		}
 
 		$this->checks();
 
 		$base      = $this->signatureBaseString();
 		$signature = $this->calculateDataSignature($base, $consumer_secret, $token_secret, $this->param['oauth_signature_method']);
+
 		return $signature;
 	}
 
-	
 	/**
 	 * Calculate the signature of a string.
 	 * Uses the signature method from the current parameters.
@@ -216,17 +197,15 @@ class OAuthRequest
 	 * @exception OAuthException2 thrown when the signature method is unknown 
 	 * @return string signature
 	 */
-	function calculateDataSignature ( $data, $consumer_secret, $token_secret, $signature_method )
+	function calculateDataSignature($data, $consumer_secret, $token_secret, $signature_method)
 	{
-		if (is_null($data))
-		{
+		if(is_null($data))
 			$data = '';
-		}
 
 		$sig = $this->getSignatureMethod($signature_method);
+
 		return $sig->signature($this, $data, $consumer_secret, $token_secret);
 	}
-
 
 	/**
 	 * Select a signature method from the list of available methods.
@@ -237,38 +216,34 @@ class OAuthRequest
 	 * @exception OAuthException2 when we don't support any method in the list
 	 * @return string
 	 */
-	public function selectSignatureMethod ( $methods )
+	public function selectSignatureMethod($methods)
 	{
-		if (in_array('HMAC-SHA1', $methods))
-		{
+		if(in_array('HMAC-SHA1', $methods)) {
 			$method = 'HMAC-SHA1';
 		}
-		else if (in_array('MD5', $methods))
-		{
+		else if(in_array('MD5', $methods)) {
 			$method = 'MD5';
 		}
 		else
 		{
 			$method = false;
-			foreach ($methods as $m)
+			foreach($methods as $m)
 			{
-				$m = strtoupper($m);
+				$m  = strtoupper($m);
 				$m2 = preg_replace('/[^A-Z0-9]/', '_', $m);
-				if (file_exists(dirname(__FILE__).'/signature_method/OAuthSignatureMethod_'.$m2.'.php'))
-				{
+
+				if(file_exists(dirname(__FILE__).'/signature_method/OAuthSignatureMethod_'.$m2.'.php')) {
 					$method = $m;
 					break;
 				}
 			}
 			
-			if (empty($method))
-			{
+			if(empty($method))
 				throw new OAuthException2('None of the signing methods is supported.');
-			}
 		}
+
 		return $method;
 	}
-
 	
 	/**
 	 * Fetch the signature object used for calculating and checking the signature base string
@@ -276,49 +251,43 @@ class OAuthRequest
 	 * @param string method
 	 * @return OAuthSignatureMethod object
 	 */
-	function getSignatureMethod ( $method )
+	function getSignatureMethod($method)
 	{
 		$m     = strtoupper($method);
 		$m     = preg_replace('/[^A-Z0-9]/', '_', $m);
 		$class = 'OAuthSignatureMethod_'.$m;
 
-		if (file_exists(dirname(__FILE__).'/signature_method/'.$class.'.php'))
-		{
+		if(file_exists(dirname(__FILE__).'/signature_method/'.$class.'.php')) {
 			require_once dirname(__FILE__).'/signature_method/'.$class.'.php';
 			$sig = new $class();
 		}
 		else
-		{
 			throw new OAuthException2('Unsupported signature method "'.$m.'".');
-		}
+
 		return $sig;
 	}
-
 
 	/**
 	 * Perform some sanity checks.
 	 * 
 	 * @exception OAuthException2 thrown when sanity checks failed
 	 */
-	function checks ()
+	function checks()
 	{
-		if (isset($this->param['oauth_version']))
+		if(isset($this->param['oauth_version']))
 		{
 			$version = $this->urldecode($this->param['oauth_version']);
-			if ($version != '1.0')
-			{
+			if($version != '1.0')
 				throw new OAuthException2('Expected OAuth version 1.0, got "'.$this->param['oauth_version'].'"');
-			}
 		}
 	}
-
 
 	/**
 	 * Return the request method
 	 * 
 	 * @return string
 	 */
-	function getMethod ()
+	function getMethod()
 	{
 		return $this->method;
 	}
@@ -329,65 +298,51 @@ class OAuthRequest
 	 * 
 	 * @return string
 	 */
-	function getNormalizedParams ()
+	function getNormalizedParams()
 	{
-		/*
-		// sort by name, then by value 
-		// (needed when we start allowing multiple values with the same name)
-		$keys   = array_keys($this->param);
-		$values = array_values($this->param);
-		array_multisort($keys, SORT_ASC, $values, SORT_ASC);
-        */
-        $params     = $this->param;
+    $params     = $this->param;
 		$normalized = array();
 
 		ksort($params);
-		foreach ($params as $key => $value)
+		foreach($params as $key => $value)
 		{
-		    // all names and values are already urlencoded, exclude the oauth signature
-		    if ($key != 'oauth_signature')
-		   	{
-				if (is_array($value))
+	    // all names and values are already urlencoded, exclude the oauth signature
+	    if($key != 'oauth_signature')
+	   	{
+				if(is_array($value))
 				{
 					$value_sort = $value;
 					sort($value_sort);
-					foreach ($value_sort as $v)
-					{
+					foreach($value_sort as $v) {
 						$normalized[] = $key.'='.$v;
 					}
 				}
 				else
-				{
 					$normalized[] = $key.'='.$value;
-				}
 			}
 		}
+
 		return implode('&', $normalized);
 	}
-
 
 	/**
 	 * Return the normalised url for signature checks
 	 */
-	function getRequestUrl ()
+	function getRequestUrl()
 	{
-        $url =  $this->uri_parts['scheme'] . '://'
-              . $this->uri_parts['user'] . (!empty($this->uri_parts['pass']) ? ':' : '')
-              . $this->uri_parts['pass'] . (!empty($this->uri_parts['user']) ? '@' : '')
-			  . $this->uri_parts['host'];
+    $url =  $this->uri_parts['scheme'] . '://'
+          . $this->uri_parts['user'] . (!empty($this->uri_parts['pass']) ? ':' : '')
+          . $this->uri_parts['pass'] . (!empty($this->uri_parts['user']) ? '@' : '')
+    . $this->uri_parts['host'];
 			  
-		if (	$this->uri_parts['port'] 
-			&&	$this->uri_parts['port'] != $this->defaultPortForScheme($this->uri_parts['scheme']))
-		{
+		if($this->uri_parts['port'] &&	$this->uri_parts['port'] != $this->defaultPortForScheme($this->uri_parts['scheme']))
 			$url .= ':'.$this->uri_parts['port'];
-		}
-		if (!empty($this->uri_parts['path']))
-		{
+
+		if(!empty($this->uri_parts['path']))
 			$url .= $this->uri_parts['path'];
-		}
+
 		return $url;
 	}
-	
 	
 	/**
 	 * Get a parameter, value is always urlencoded
@@ -396,31 +351,23 @@ class OAuthRequest
 	 * @param boolean	urldecode	set to true to decode the value upon return
 	 * @return string value		false when not found
 	 */
-	function getParam ( $name, $urldecode = false )
+	function getParam($name, $urldecode = false)
 	{
-		if (isset($this->param[$name]))
-		{
+		if(isset($this->param[$name]))
 			$s = $this->param[$name];
-		}
-		else if (isset($this->param[$this->urlencode($name)]))
-		{
+		else if(isset($this->param[$this->urlencode($name)]))
 			$s = $this->param[$this->urlencode($name)];
-		}
 		else
-		{
 			$s = false;
-		}
-		if (!empty($s) && $urldecode)
+
+		if(!empty($s) && $urldecode)
 		{
-			if (is_array($s))
-			{
+			if(is_array($s))
 				$s = array_map(array($this,'urldecode'), $s);
-			}
 			else
-			{
 				$s = $this->urldecode($s);
-			}
 		}
+
 		return $s;
 	}
 
@@ -431,82 +378,68 @@ class OAuthRequest
 	 * @param string	value
 	 * @param boolean	encoded	set to true when the values are already encoded
 	 */
-	function setParam ( $name, $value, $encoded = false )
+	function setParam($name, $value, $encoded = false)
 	{
-		if (!$encoded)
+		if(!$encoded)
 		{
 			$name_encoded = $this->urlencode($name);
-			if (is_array($value))
+			if(is_array($value))
 			{
-				foreach ($value as $v)
-				{
+				foreach($value as $v) {
 					$this->param[$name_encoded][] = $this->urlencode($v);
 				}
 			}
 			else
-			{
 				$this->param[$name_encoded] = $this->urlencode($value);
-			}
 		}
 		else
-		{
 			$this->param[$name] = $value;
-		}
 	}
-
 
 	/**
 	 * Re-encode all parameters so that they are encoded using RFC3986.
 	 * Updates the $this->param attribute.
 	 */
-	protected function transcodeParams ()
+	protected function transcodeParams()
 	{
 		$params      = $this->param;
 		$this->param = array();
 		
-		foreach ($params as $name=>$value)
+		foreach($params as $name=>$value)
 		{
-			if (is_array($value))
-			{
+			if(is_array($value))
 				$this->param[$this->urltranscode($name)] = array_map(array($this,'urltranscode'), $value);
-			}
 			else
-			{
 				$this->param[$this->urltranscode($name)] = $this->urltranscode($value);
-			}
 		}
 	}
-
-
 
 	/**
 	 * Return the body of the OAuth request.
 	 * 
 	 * @return string		null when no body
 	 */
-	function getBody ()
+	function getBody()
 	{
 		return $this->body;
 	}
 
-
 	/**
 	 * Return the body of the OAuth request.
 	 * 
 	 * @return string		null when no body
 	 */
-	function setBody ( $body )
+	function setBody($body)
 	{
 		$this->body = $body;
 	}
-
 
 	/**
 	 * Parse the uri into its parts.  Fill in the missing parts.
 	 * 
 	 * @param string $parameters  optional extra parameters (from eg the http post)
 	 */
-	protected function parseUri ( $parameters )
+	protected function parseUri($parameters)
 	{
 		$ps = @parse_url($this->uri);
 
@@ -519,53 +452,37 @@ class OAuthRequest
 		else
 			$ps['host'] = strtolower($ps['host']);
 			
-		if (!preg_match('/^[a-z0-9\.\-]+$/', $ps['host']))
-		{
+		if(!preg_match('/^[a-z0-9\.\-]+$/', $ps['host']))
 			throw new OAuthException2('Unsupported characters in host name');
-		}
 
 		// Get the port we are talking on
-		if (empty($ps['port']))
-		{
+		if(empty($ps['port']))
 			$ps['port'] = $this->defaultPortForScheme($ps['scheme']);
-		}
 		
-		if (empty($ps['user']))
-		{
+		if(empty($ps['user']))
 			$ps['user'] = '';
-		}
-		if (empty($ps['pass']))
-		{
+		if(empty($ps['pass']))
 			$ps['pass'] = '';
-		}
-		if (empty($ps['path']))
-		{
+		if(empty($ps['path']))
 			$ps['path'] = '/';
-		}
-		if (empty($ps['query']))
-		{
+		if(empty($ps['query']))
 			$ps['query'] = '';
-		}
-		if (empty($ps['fragment']))
-		{
+		if(empty($ps['fragment']))
 			$ps['fragment'] = '';
-		}
 
 		// Now all is complete - parse all parameters
-		foreach (array($ps['query'], $parameters) as $params)
+		foreach(array($ps['query'], $parameters) as $params)
 		{
-			if (strlen($params) > 0)
+			if(strlen($params) > 0)
 			{
 				$params = explode('&', $params);
-				foreach ($params as $p)
+				foreach($params as $p)
 				{
 					@list($name, $value) = explode('=', $p, 2);
-					if (!strlen($name)) 
-					{
+					if(!strlen($name)) 
 						continue;
-					}
 
-					if (array_key_exists($name, $this->param)) 
+					if(array_key_exists($name, $this->param)) 
 					{
 						if (is_array($this->param[$name]))
 							$this->param[$name][] = $value;
@@ -573,15 +490,13 @@ class OAuthRequest
 							$this->param[$name] = array($this->param[$name], $value);
 					}
 					else 
-					{
 						$this->param[$name]  = $value;
-					}
 				}
 			}
 		}
+
 		$this->uri_parts = $ps;
 	}
-
 
 	/**
 	 * Return the default port for a scheme
@@ -589,7 +504,7 @@ class OAuthRequest
 	 * @param string scheme
 	 * @return int
 	 */
-	protected function defaultPortForScheme ( $scheme )
+	protected function defaultPortForScheme($scheme)
 	{
 		switch ($scheme)
 		{
@@ -601,23 +516,18 @@ class OAuthRequest
 		}
 	}
 	
-	
 	/**
 	 * Encode a string according to the RFC3986
 	 * 
 	 * @param string s
 	 * @return string
 	 */
-	function urlencode ( $s )
+	function urlencode($s)
 	{
-		if ($s === false)
-		{
+		if($s === false)
 			return $s;
-		}
 		else
-		{
 			return str_replace('%7E', '~', rawurlencode($s));
-		}
 	}
 	
 	/**
@@ -627,16 +537,12 @@ class OAuthRequest
 	 * @param string s
 	 * @return string
 	 */
-	function urldecode ( $s )
+	function urldecode($s)
 	{
-		if ($s === false)
-		{
+		if($s === false)
 			return $s;
-		}
 		else
-		{
 			return rawurldecode($s);
-		}
 	}
 
 	/**
@@ -647,19 +553,13 @@ class OAuthRequest
 	 * @param string s
 	 * @return string
 	 */
-	function urltranscode ( $s )
+	function urltranscode($s)
 	{
-		if ($s === false)
-		{
+		if($s === false)
 			return $s;
-		}
 		else
-		{
 			return $this->urlencode(rawurldecode($s));
-			// return $this->urlencode(urldecode($s));
-		}
 	}
-
 
 	/**
 	 * Parse the oauth parameters from the request headers
@@ -676,63 +576,44 @@ class OAuthRequest
      */
 	private function parseHeaders ()
 	{
-/*
-		$this->headers['Authorization'] = 'OAuth realm="http://photos.example.net/authorize",
-                oauth_consumer_key="dpf43f3p2l4k3l03",
-                oauth_token="nnch734d00sl2jdk",
-                oauth_signature_method="HMAC-SHA1",
-                oauth_signature="tR3%2BTy81lMeYAr%2FFid0kMTYa%2FWM%3D",
-                oauth_timestamp="1191242096",
-                oauth_nonce="kllo9940pd9333jh",
-                oauth_version="1.0"';
-*/		
-		if (isset($this->headers['Authorization']))
+		if(isset($this->headers['Authorization']))
 		{
 			$auth = trim($this->headers['Authorization']);
-			if (strncasecmp($auth, 'OAuth', 4) == 0)
+			if(strncasecmp($auth, 'OAuth', 4) == 0)
 			{
 				$vs = explode(',', substr($auth, 6));
-				foreach ($vs as $v)
+				foreach($vs as $v)
 				{
-					if (strpos($v, '='))
+					if(strpos($v, '='))
 					{
 						$v = trim($v);
 						list($name,$value) = explode('=', $v, 2);
-						if (!empty($value) && $value{0} == '"' && substr($value, -1) == '"')
-						{
+						if(!empty($value) && $value{0} == '"' && substr($value, -1) == '"')
 							$value = substr(substr($value, 1), 0, -1);
-						}
 						
-						if (strcasecmp($name, 'realm') == 0)
-						{
+						if(strcasecmp($name, 'realm') == 0)
 							$this->realm = $value;
-						}
 						else
-						{
 							$this->param[$name] = $value;
-						}
 					}
 				}
 			}
 		}
 	}
 
-
 	/**
 	 * Fetch the content type of the current request
 	 * 
 	 * @return string
 	 */
-	private function getRequestContentType ()
+	private function getRequestContentType()
 	{
 		$content_type = 'application/octet-stream';
-		if (!empty($_SERVER) && array_key_exists('CONTENT_TYPE', $_SERVER))
-		{
+		if(!empty($_SERVER) && array_key_exists('CONTENT_TYPE', $_SERVER))
 			list($content_type) = explode(';', $_SERVER['CONTENT_TYPE']);
-		}
+
 		return trim($content_type);
 	}
-
 
 	/**
 	 * Get the body of a POST or PUT.
@@ -741,26 +622,26 @@ class OAuthRequest
 	 * 
 	 * @return string		null when no body present (or wrong content type for body)
 	 */
-	private function getRequestBody ()
+	private function getRequestBody()
 	{
 		$body = null;
-		if ($this->method == 'POST' || $this->method == 'PUT')
+		if($this->method == 'POST' || $this->method == 'PUT')
 		{
 			$body = '';
 			$fh   = @fopen('php://input', 'r');
-			if ($fh)
+			if($fh)
 			{
-				while (!feof($fh))
+				while(!feof($fh))
 				{
 					$s = fread($fh, 1024);
-					if (is_string($s))
-					{
+					if(is_string($s))
 						$body .= $s;
-					}
 				}
+
 				fclose($fh);
 			}
 		}
+
 		return $body;
 	}
 
@@ -774,24 +655,22 @@ class OAuthRequest
 	private function getRequestBodyOfMultipart()
 	{
 		$body = null;
-		if ($this->method == 'POST')
+		if($this->method == 'POST')
 		{
 			$body = '';
-			if (is_array($_POST) && count($_POST) > 1) 
+			if(is_array($_POST) && count($_POST) > 1) 
 			{
-				foreach ($_POST AS $k => $v) {
+				foreach($_POST AS $k => $v) {
 					$body .= $k . '=' . $this->urlencode($v) . '&';
-				} #end foreach
+				}
+
 				if(substr($body,-1) == '&')
-				{
 					$body = substr($body, 0, strlen($body)-1);
-				} #end if
-			} #end if
-		} #end if
+			} 
+		}
 
 		return $body;
 	}
-	
 	
 	/**
 	 * Simple function to perform a redirect (GET).
@@ -801,35 +680,29 @@ class OAuthRequest
 	 * @param array params		parameters, urlencoded
 	 * @exception OAuthException2 when redirect uri is illegal
 	 */
-	public function redirect ( $uri, $params )
+	public function redirect($uri, $params)
 	{
-		if (!empty($params))
+		if(!empty($params))
 		{
 			$q = array();
-			foreach ($params as $name=>$value)
-			{
+			foreach($params as $name=>$value) {
 				$q[] = $name.'='.$value;
 			}
 			$q_s = implode('&', $q);
 			
-			if (strpos($uri, '?'))
-			{
+			if(strpos($uri, '?'))
 				$uri .= '&'.$q_s;
-			}
 			else
-			{
 				$uri .= '?'.$q_s;
-			}
 		}
 		
 		// simple security - multiline location headers can inject all kinds of extras
 		$uri = preg_replace('/\s/', '%20', $uri);
-		if (strncasecmp($uri, 'http://', 7) && strncasecmp($uri, 'https://', 8))
+		if(strncasecmp($uri, 'http://', 7) && strncasecmp($uri, 'https://', 8))
 		{
-			if (strpos($uri, '://'))
-			{
+			if(strpos($uri, '://'))
 				throw new OAuthException2('Illegal protocol in redirect uri '.$uri);
-			}
+
 			$uri = 'http://'.$uri;
 		}
 		
@@ -839,8 +712,3 @@ class OAuthRequest
 		exit();
 	}
 }
-
-
-/* vi:set ts=4 sts=4 sw=4 binary noeol: */
-
-?>

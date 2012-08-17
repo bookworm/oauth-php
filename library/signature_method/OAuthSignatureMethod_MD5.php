@@ -32,14 +32,12 @@
 
 require_once dirname(__FILE__).'/OAuthSignatureMethod.class.php';
 
-
 class OAuthSignatureMethod_MD5 extends OAuthSignatureMethod
 {
-	public function name ()
+	public function name()
 	{
 		return 'MD5';
 	}
-
 
 	/**
 	 * Calculate the signature using MD5
@@ -52,19 +50,19 @@ class OAuthSignatureMethod_MD5 extends OAuthSignatureMethod
 	 * @param string token_secret
 	 * @return string  
 	 */
-	function signature ( $request, $base_string, $consumer_secret, $token_secret )
+	function signature($request, $base_string, $consumer_secret, $token_secret)
 	{
 		$s  .= '&'.$request->urlencode($consumer_secret).'&'.$request->urlencode($token_secret);
 		$md5 = md5($base_string);
 		$bin = '';
 		
-		for ($i = 0; $i < strlen($md5); $i += 2)
+		for($i = 0; $i < strlen($md5); $i += 2)
 		{
-		    $bin .= chr(hexdec($md5{$i+1}) + hexdec($md5{$i}) * 16);
+      $bin .= chr(hexdec($md5{$i+1}) + hexdec($md5{$i}) * 16);
 		}
+
 		return $request->urlencode(base64_encode($bin));
 	}
-
 
 	/**
 	 * Check if the request signature corresponds to the one calculated for the request.
@@ -76,7 +74,7 @@ class OAuthSignatureMethod_MD5 extends OAuthSignatureMethod
 	 * @param string signature		from the request, still urlencoded
 	 * @return string
 	 */
-	public function verify ( $request, $base_string, $consumer_secret, $token_secret, $signature )
+	public function verify($request, $base_string, $consumer_secret, $token_secret, $signature)
 	{
 		$a = $request->urldecode($signature);
 		$b = $request->urldecode($this->signature($request, $base_string, $consumer_secret, $token_secret));
@@ -89,7 +87,3 @@ class OAuthSignatureMethod_MD5 extends OAuthSignatureMethod
 		return rawurlencode($valA) == rawurlencode($valB);
 	}
 }
-
-/* vi:set ts=4 sts=4 sw=4 binary noeol: */
-
-?>

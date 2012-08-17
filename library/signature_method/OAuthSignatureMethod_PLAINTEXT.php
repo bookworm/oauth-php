@@ -32,14 +32,12 @@
 
 require_once dirname(__FILE__).'/OAuthSignatureMethod.class.php';
 
-
 class OAuthSignatureMethod_PLAINTEXT extends OAuthSignatureMethod
 {
 	public function name ()
 	{
 		return 'PLAINTEXT';
 	}
-
 
 	/**
 	 * Calculate the signature using PLAINTEXT
@@ -50,11 +48,10 @@ class OAuthSignatureMethod_PLAINTEXT extends OAuthSignatureMethod
 	 * @param string token_secret
 	 * @return string  
 	 */
-	function signature ( $request, $base_string, $consumer_secret, $token_secret )
+	function signature($request, $base_string, $consumer_secret, $token_secret)
 	{
 		return $request->urlencode($request->urlencode($consumer_secret).'&'.$request->urlencode($token_secret));
 	}
-
 
 	/**
 	 * Check if the request signature corresponds to the one calculated for the request.
@@ -66,7 +63,7 @@ class OAuthSignatureMethod_PLAINTEXT extends OAuthSignatureMethod
 	 * @param string signature		from the request, still urlencoded
 	 * @return string
 	 */
-	public function verify ( $request, $base_string, $consumer_secret, $token_secret, $signature )
+	public function verify($request, $base_string, $consumer_secret, $token_secret, $signature)
 	{
 		$a = $request->urldecode($signature);
 		$b = $request->urldecode($this->signature($request, $base_string, $consumer_secret, $token_secret));
@@ -74,7 +71,3 @@ class OAuthSignatureMethod_PLAINTEXT extends OAuthSignatureMethod
 		return $request->urldecode($a) == $request->urldecode($b);
 	}
 }
-
-/* vi:set ts=4 sts=4 sw=4 binary noeol: */
-
-?>

@@ -30,7 +30,6 @@
  * THE SOFTWARE.
  */
 
-
 require_once dirname(__FILE__).'/OAuthSignatureMethod.class.php';
 
 class OAuthSignatureMethod_RSA_SHA1 extends OAuthSignatureMethod
@@ -40,14 +39,13 @@ class OAuthSignatureMethod_RSA_SHA1 extends OAuthSignatureMethod
 		return 'RSA-SHA1';
 	}
 	
-
 	/**
 	 * Fetch the public CERT key for the signature
 	 * 
 	 * @param OAuthRequest request
 	 * @return string public key
 	 */
-	protected function fetch_public_cert ( $request )
+	protected function fetch_public_cert($request)
 	{
 		// not implemented yet, ideas are:
 		// (1) do a lookup in a table of trusted certs keyed off of consumer
@@ -58,14 +56,13 @@ class OAuthSignatureMethod_RSA_SHA1 extends OAuthSignatureMethod
 		throw OAuthException2("OAuthSignatureMethod_RSA_SHA1::fetch_public_cert not implemented");
 	}
 	
-	
 	/**
 	 * Fetch the private CERT key for the signature
 	 * 
 	 * @param OAuthRequest request
 	 * @return string private key
 	 */
-	protected function fetch_private_cert ( $request )
+	protected function fetch_private_cert($request)
 	{
 		// not implemented yet, ideas are:
 		// (1) do a lookup in a table of trusted certs keyed off of consumer
@@ -73,7 +70,6 @@ class OAuthSignatureMethod_RSA_SHA1 extends OAuthSignatureMethod
 		// either way should return a string representation of the certificate
 		throw OAuthException2("OAuthSignatureMethod_RSA_SHA1::fetch_private_cert not implemented");
 	}
-
 
 	/**
 	 * Calculate the signature using RSA-SHA1
@@ -85,7 +81,7 @@ class OAuthSignatureMethod_RSA_SHA1 extends OAuthSignatureMethod
 	 * @param string token_secret
 	 * @return string  
 	 */
-	public function signature ( $request, $base_string, $consumer_secret, $token_secret )
+	public function signature($request, $base_string, $consumer_secret, $token_secret)
 	{
 		// Fetch the private key cert based on the request
 		$cert = $this->fetch_private_cert($request);
@@ -103,7 +99,6 @@ class OAuthSignatureMethod_RSA_SHA1 extends OAuthSignatureMethod
 		return $request->urlencode(base64_encode($sig));
 	}
 	
-
 	/**
 	 * Check if the request signature is the same as the one calculated for the request.
 	 * 
@@ -114,7 +109,7 @@ class OAuthSignatureMethod_RSA_SHA1 extends OAuthSignatureMethod
 	 * @param string signature
 	 * @return string  
 	 */
-	public function verify ( $request, $base_string, $consumer_secret, $token_secret, $signature )
+	public function verify($request, $base_string, $consumer_secret, $token_secret, $signature)
 	{
 		$decoded_sig = base64_decode($request->urldecode($signature));
 		  
@@ -129,11 +124,7 @@ class OAuthSignatureMethod_RSA_SHA1 extends OAuthSignatureMethod
 		
 		// Release the key resource
 		openssl_free_key($publickeyid);
+    
 		return $ok == 1;
 	}
-
 }
-
-/* vi:set ts=4 sts=4 sw=4 binary noeol: */
-
-?>

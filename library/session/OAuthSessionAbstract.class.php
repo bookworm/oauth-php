@@ -37,8 +37,6 @@
  */
 abstract class OAuthSessionAbstract
 {
-	abstract public function get ( $key );
-	abstract public function set ( $key, $data );
+  abstract public function get($key);
+  abstract public function set($key, $data);
 }
-
-?>

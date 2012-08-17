@@ -8,7 +8,7 @@ class OAuthSessionJSession extends OAuthSessionAbstract
 {
   protected $store = null;
 
-  public function __construct( $options = array() )
+  public function __construct($options=array())
   {
     $this->store = JFactory::getSession();
   }
@@ -19,7 +19,7 @@ class OAuthSessionJSession extends OAuthSessionAbstract
    * @param string $key
    * @return The value or null if not set.
    */
-  public function get ( $key ) 
+  public function get($key) 
   {
     return $this->store->get($key, null);
   }
@@ -30,7 +30,7 @@ class OAuthSessionJSession extends OAuthSessionAbstract
    * @param string $key The key
    * @param any $data The data 
    */
-  public function set ( $key, $data ) 
+  public function set($key, $data) 
   {
     $this->store->set($key, $data);
   }

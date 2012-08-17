@@ -41,10 +41,4 @@ class OAuthException2 extends Exception
 		Exception::__construct($message);
 		OAuthRequestLogger::addNote('OAuthException2: '.$message);
 	}
-
 }
-
-
-/* vi:set ts=4 sts=4 sw=4 binary noeol: */
-
-?>
