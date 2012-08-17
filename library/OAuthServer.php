@@ -99,7 +99,7 @@ class OAuthServer extends OAuthRequestVerifier
    *
    * @param boolean $justToken  Return just the request token? Defaults to false
    * @param boolean $urlEncoded Should we return an $urlEncoded string Defaults to true
-   * @return mixed Either 1. An array of the oauth params or 2. A URL encoded string of OAuth params
+   * @return mixed Either 1. An array with 'token', 'token_secret' and 'token_ttl' 2. An array of the oauth params or 3. A URL encoded string of OAuth params
 	 */
 	public function requestToken($justToken=false, $urlEncoded=true)
 	{
@@ -122,6 +122,11 @@ class OAuthServer extends OAuthRequestVerifier
 		$store  = OAuthStore::instance();
 		$token  = $store->addConsumerRequestToken($this->getParam('oauth_consumer_key', true), $options);
 
+    if($justToken) {
+      OAuthRequestLogger::flush();
+      return $token;
+    }
+
     if($urlEncoded)
     {
       $result = 'oauth_callback_confirmed=1&oauth_token='.$this->urlencode($token['token'])
@@ -141,9 +146,6 @@ class OAuthServer extends OAuthRequestVerifier
 
 		OAuthRequestLogger::flush();
 
-    if($justToken) 
-      return $token['token'];
-
     return $result;
 	}
 
@@ -153,7 +155,7 @@ class OAuthServer extends OAuthRequestVerifier
    * 
    * @param boolean $justToken  Return just the access token? Defaults to false
    * @param boolean $urlEncoded Should we return an $urlEncoded string Defaults to true
-   * @return mixed Either 1. An array of the oauth params or 2. A URL encoded string of OAuth params   
+   * @return mixed Either 1. 2. An array of the oauth params or 2. A URL encoded string of OAuth params   
    */
   public function accessToken($justToken=false, $urlEncoded=true)
   {
@@ -174,6 +176,11 @@ class OAuthServer extends OAuthRequestVerifier
     $store  = OAuthStore::instance();
     $token  = $store->exchangeConsumerRequestForAccessToken($this->getParam('oauth_token', true), $options);
 
+    if($justToken) {
+      OAuthRequestLogger::flush();
+      return $token;
+    }
+    
     if($urlEncoded)
     {
       $result = 'oauth_token='.$this->urlencode($token['token'])
@@ -192,9 +199,6 @@ class OAuthServer extends OAuthRequestVerifier
     }
 
     OAuthRequestLogger::flush();
-
-    if($justToken) 
-      return $token['token'];
 
     return $result;
   } 
