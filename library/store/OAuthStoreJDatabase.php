@@ -145,7 +145,7 @@ class OAuthStoreJDatabase extends OAuthStoreJSQL
   {
     if($this->db->getErrorNum())
     {
-      $msg = "SQL Error in OAuthStoreMySQL: ".$this->db->getErrorMsg()."\n\n" . $sql;
+      $msg = "SQL Error in OAuthStoreJDatabase: ".$this->db->getErrorMsg()."\n\n" . $sql;
       throw new OAuthException2($msg);
     }
   }
