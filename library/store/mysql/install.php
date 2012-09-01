@@ -10,7 +10,7 @@
 mysql_connect('localhost', 'root');
 if (mysql_errno())
 {
-	die(' Error '.mysql_errno().': '.mysql_error());
+  die(' Error '.mysql_errno().': '.mysql_error());
 }
 mysql_select_db('test');
 */
@@ -20,9 +20,9 @@ $ps  = explode('#--SPLIT--', $sql);
 
 foreach($ps as $p)
 {
-	$p = preg_replace('/^\s*#.*$/m', '', $p);
-	
-	mysql_query($p);
-	if(mysql_errno())
-		die(' Error '.mysql_errno().': '.mysql_error());
+  $p = preg_replace('/^\s*#.*$/m', '', $p);
+  
+  mysql_query($p);
+  if(mysql_errno())
+    die(' Error '.mysql_errno().': '.mysql_error());
 }

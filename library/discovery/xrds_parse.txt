@@ -1,6 +1,6 @@
 The xrds_parse.php script contains the function:
 
-	 function xrds_parse ( $data. )
+   function xrds_parse ( $data. )
 
 $data Contains the contents of a XRDS XML file.
 When the data is invalid XML then this will throw an exception.
@@ -98,4 +98,3 @@ Array
                 )
         )
 )
-

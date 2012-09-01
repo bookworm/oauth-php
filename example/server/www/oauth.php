@@ -41,37 +41,35 @@ $server = new OAuthServer();
 switch($_SERVER['PATH_INFO'])
 {
 case '/request_token':
-	$server->requestToken();
-	exit;
+  $server->requestToken();
+  exit;
 
 case '/access_token':
-	$server->accessToken();
-	exit;
+  $server->accessToken();
+  exit;
 
 case '/authorize':
-	# logon
+  # logon
 
-	assert_logged_in();
+  assert_logged_in();
 
-	try
-	{
-		$server->authorizeVerify();
-		$server->authorizeFinish(true, 1);
-	}
-	catch (OAuthException2 $e)
-	{
-		header('HTTP/1.1 400 Bad Request');
-		header('Content-Type: text/plain');
-		
-		echo "Failed OAuth Request: " . $e->getMessage();
-	}
-	exit;
+  try
+  {
+    $server->authorizeVerify();
+    $server->authorizeFinish(true, 1);
+  }
+  catch (OAuthException2 $e)
+  {
+    header('HTTP/1.1 400 Bad Request');
+    header('Content-Type: text/plain');
+    
+    echo "Failed OAuth Request: " . $e->getMessage();
+  }
+  exit;
 
-	
+  
 default:
-	header('HTTP/1.1 500 Internal Server Error');
-	header('Content-Type: text/plain');
-	echo "Unknown request";
+  header('HTTP/1.1 500 Internal Server Error');
+  header('Content-Type: text/plain');
+  echo "Unknown request";
 }
-
-?>

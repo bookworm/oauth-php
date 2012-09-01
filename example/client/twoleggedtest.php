@@ -67,12 +67,9 @@ try
 	{
 	}
 
-
 	var_dump($response);
 }
 catch(OAuthException2 $e)
 {
 	echo "Exception" . $e->getMessage();
 }
-
-?>

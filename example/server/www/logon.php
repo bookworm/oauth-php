@@ -35,21 +35,19 @@ require_once '../core/init.php';
 
 if (isset($_POST['username']) && isset($_POST['password']))
 {
-	if ($_POST['username'] == USERNAME && $_POST['password'] == PASSWORD)
-	{
-		$_SESSION['authorized'] = true;
-		if (!empty($_REQUEST['goto']))
-		{
-			header('Location: ' . $_REQUEST['goto']);
-			die;
-		}
+  if ($_POST['username'] == USERNAME && $_POST['password'] == PASSWORD)
+  {
+    $_SESSION['authorized'] = true;
+    if (!empty($_REQUEST['goto']))
+    {
+      header('Location: ' . $_REQUEST['goto']);
+      die;
+    }
 
-		echo "Logon succesfull.";
-		die;
-	}
+    echo "Logon succesfull.";
+    die;
+  }
 }
 
 $smarty = session_smarty();
 $smarty->display('logon.tpl');
-
-?>

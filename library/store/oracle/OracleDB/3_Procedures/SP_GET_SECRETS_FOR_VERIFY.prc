@@ -16,27 +16,27 @@ P_RESULT := 0;
 
 IF P_TOKEN_TYPE IS NULL THEN
    OPEN P_ROWS FOR
-   SELECT	OSR.OSR_ID "osr_id",
-          OSR.OSR_CONSUMER_KEY		"consumer_key",
-          OSR.OSR_CONSUMER_SECRET		"consumer_secret"
+   SELECT OSR.OSR_ID "osr_id",
+          OSR.OSR_CONSUMER_KEY    "consumer_key",
+          OSR.OSR_CONSUMER_SECRET   "consumer_secret"
           FROM OAUTH_SERVER_REGISTRY OSR
-          WHERE OSR.OSR_CONSUMER_KEY	= P_CONSUMER_KEY
-          AND OSR.OSR_ENABLED		= 1;
+          WHERE OSR.OSR_CONSUMER_KEY  = P_CONSUMER_KEY
+          AND OSR.OSR_ENABLED   = 1;
 ELSE
     OPEN P_ROWS FOR
     SELECT OSR.OSR_ID "osr_id",
            OST.OST_ID "ost_id",
-           OST.OST_USA_ID_REF			"user_id",
-           OSR.OSR_CONSUMER_KEY		"consumer_key",
-           OSR.OSR_CONSUMER_SECRET		"consumer_secret",
-           OST.OST_TOKEN				"token",
-           OST.OST_TOKEN_SECRET		"token_secret"
+           OST.OST_USA_ID_REF     "user_id",
+           OSR.OSR_CONSUMER_KEY   "consumer_key",
+           OSR.OSR_CONSUMER_SECRET    "consumer_secret",
+           OST.OST_TOKEN        "token",
+           OST.OST_TOKEN_SECRET   "token_secret"
            FROM OAUTH_SERVER_REGISTRY OSR, OAUTH_SERVER_TOKEN OST
            WHERE OST.OST_OSR_ID_REF = OSR.OSR_ID
-           AND upper(OST.OST_TOKEN_TYPE)	= upper(P_TOKEN_TYPE)
-           AND OSR.OSR_CONSUMER_KEY	= P_CONSUMER_KEY
-           AND OST.OST_TOKEN			= P_TOKEN
-           AND OSR.OSR_ENABLED		= 1
+           AND upper(OST.OST_TOKEN_TYPE)  = upper(P_TOKEN_TYPE)
+           AND OSR.OSR_CONSUMER_KEY = P_CONSUMER_KEY
+           AND OST.OST_TOKEN      = P_TOKEN
+           AND OSR.OSR_ENABLED    = 1
            AND OST.OST_TOKEN_TTL  >= SYSDATE;
     
 END IF;

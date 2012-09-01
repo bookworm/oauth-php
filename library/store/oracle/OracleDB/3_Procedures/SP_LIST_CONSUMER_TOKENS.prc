@@ -13,18 +13,18 @@ BEGIN
   P_RESULT := 0;
   
   OPEN P_ROWS FOR
-    SELECT	OSR_CONSUMER_KEY 		"consumer_key",
-    OSR_CONSUMER_SECRET		"consumer_secret",
-    OSR_ENABLED				"enabled",
-    OSR_STATUS 				"status",
-    OSR_APPLICATION_URI		"application_uri",
-    OSR_APPLICATION_TITLE	"application_title",
-    OSR_APPLICATION_DESCR	"application_descr",
-    OST_TIMESTAMP			"timestamp",
-    OST_TOKEN				"token",
-    OST_TOKEN_SECRET		"token_secret",
-    OST_REFERRER_HOST		"token_referrer_host",
-    OSR_CALLBACK_URI		"callback_uri"
+    SELECT  OSR_CONSUMER_KEY    "consumer_key",
+    OSR_CONSUMER_SECRET   "consumer_secret",
+    OSR_ENABLED       "enabled",
+    OSR_STATUS        "status",
+    OSR_APPLICATION_URI   "application_uri",
+    OSR_APPLICATION_TITLE "application_title",
+    OSR_APPLICATION_DESCR "application_descr",
+    OST_TIMESTAMP     "timestamp",
+    OST_TOKEN       "token",
+    OST_TOKEN_SECRET    "token_secret",
+    OST_REFERRER_HOST   "token_referrer_host",
+    OSR_CALLBACK_URI    "callback_uri"
     FROM OAUTH_SERVER_REGISTRY
     JOIN OAUTH_SERVER_TOKEN
     ON OST_OSR_ID_REF = OSR_ID

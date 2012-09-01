@@ -16,16 +16,16 @@ P_RESULT := 0;
 
 
    OPEN P_ROWS FOR
-   SELECT	OCR.OCR_CONSUMER_KEY		"consumer_key",
-      OCR.OCR_CONSUMER_SECRET		"consumer_secret",
-      OCT.OCT_TOKEN				"token",
-      OCT.OCT_TOKEN_SECRET		"token_secret",
-      OCT.OCT_NAME				"token_name",
-      OCR.OCR_SIGNATURE_METHODS	"signature_methods",
-      OCR.OCR_SERVER_URI			"server_uri",
-      OCR.OCR_REQUEST_TOKEN_URI	"request_token_uri",
-      OCR.OCR_AUTHORIZE_URI		"authorize_uri",
-      OCR.OCR_ACCESS_TOKEN_URI	"access_token_uri",
+   SELECT OCR.OCR_CONSUMER_KEY    "consumer_key",
+      OCR.OCR_CONSUMER_SECRET   "consumer_secret",
+      OCT.OCT_TOKEN       "token",
+      OCT.OCT_TOKEN_SECRET    "token_secret",
+      OCT.OCT_NAME        "token_name",
+      OCR.OCR_SIGNATURE_METHODS "signature_methods",
+      OCR.OCR_SERVER_URI      "server_uri",
+      OCR.OCR_REQUEST_TOKEN_URI "request_token_uri",
+      OCR.OCR_AUTHORIZE_URI   "authorize_uri",
+      OCR.OCR_ACCESS_TOKEN_URI  "access_token_uri",
       CASE WHEN OCT.OCT_TOKEN_TTL >= TO_DATE('9999.12.31', 'yyyy.mm.dd') THEN NULL 
                  ELSE OCT.OCT_TOKEN_TTL - SYSDATE 
             END "token_ttl"

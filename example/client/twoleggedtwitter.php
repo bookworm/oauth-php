@@ -50,20 +50,20 @@ OAuthStore::instance("2Leg", $options);
 
 try
 {
-	// Obtain a request object for the request we want to make
-	$request = new OAuthRequester(TWITTER_REQUEST_TOKEN_URL, "POST");
-	$result = $request->doRequest(0);
-	parse_str($result['body'], $params);
-	
-	echo "aa";
+  // Obtain a request object for the request we want to make
+  $request = new OAuthRequester(TWITTER_REQUEST_TOKEN_URL, "POST");
+  $result = $request->doRequest(0);
+  parse_str($result['body'], $params);
+  
+  echo "aa";
 
-	// now make the request. 
+  // now make the request. 
     $request = new OAuthRequester(TWITTER_PUBLIC_TIMELINE_API, 'GET', $params);
     $result = $request->doRequest();
 }
 catch(OAuthException2 $e)
 {
-	echo "Exception" . $e->getMessage();
+  echo "Exception" . $e->getMessage();
 }
 
 ?>

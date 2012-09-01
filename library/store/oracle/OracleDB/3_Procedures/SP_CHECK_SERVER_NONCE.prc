@@ -63,8 +63,8 @@ BEGIN
 
   -- Clean up all timestamps older than the one we just received
   DELETE FROM OAUTH_SERVER_NONCE
-  WHERE OSN_CONSUMER_KEY	= P_CONSUMER_KEY
-  AND OSN_TOKEN			= P_TOKEN
+  WHERE OSN_CONSUMER_KEY  = P_CONSUMER_KEY
+  AND OSN_TOKEN     = P_TOKEN
   AND OSN_TIMESTAMP     < (P_TIMESTAMP - P_MAX_TIMESTAMP_SKEW);
                         
 

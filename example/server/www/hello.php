@@ -39,10 +39,10 @@ $authorized = false;
 $server = new OAuthServer();
 try
 {
-	if ($server->verifyIfSigned())
-	{
-		$authorized = true;
-	}
+  if ($server->verifyIfSigned())
+  {
+    $authorized = true;
+  }
 }
 catch (OAuthException2 $e)
 {
@@ -50,16 +50,14 @@ catch (OAuthException2 $e)
 
 if (!$authorized)
 {
-	header('HTTP/1.1 401 Unauthorized');
-	header('Content-Type: text/plain');
-	
-	echo "OAuth Verification Failed: " . $e->getMessage();
-	die;
+  header('HTTP/1.1 401 Unauthorized');
+  header('Content-Type: text/plain');
+  
+  echo "OAuth Verification Failed: " . $e->getMessage();
+  die;
 }
 
 // From here on we are authenticated with OAuth.
 
 header('Content-type: text/plain');
 echo 'Hello, world!';
-
-?>

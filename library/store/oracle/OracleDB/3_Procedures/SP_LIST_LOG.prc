@@ -22,45 +22,45 @@ BEGIN
       OPEN P_ROWS FOR
       SELECT * FROM (
          SELECT OLG_ID "olg_id",
-    							OLG_OSR_CONSUMER_KEY 	"osr_consumer_key",
-    							OLG_OST_TOKEN			"ost_token",
-    							OLG_OCR_CONSUMER_KEY	"ocr_consumer_key",
-    							OLG_OCT_TOKEN			"oct_token",
-    							OLG_USA_ID_REF			"user_id",
-    							OLG_RECEIVED			"received",
-    							OLG_SENT				"sent",
-    							OLG_BASE_STRING			"base_string",
-    							OLG_NOTES				"notes",
-    							OLG_TIMESTAMP			"timestamp",
-    							-- INET_NTOA(OLG_REMOTE_IP) "remote_ip"
+                  OLG_OSR_CONSUMER_KEY  "osr_consumer_key",
+                  OLG_OST_TOKEN     "ost_token",
+                  OLG_OCR_CONSUMER_KEY  "ocr_consumer_key",
+                  OLG_OCT_TOKEN     "oct_token",
+                  OLG_USA_ID_REF      "user_id",
+                  OLG_RECEIVED      "received",
+                  OLG_SENT        "sent",
+                  OLG_BASE_STRING     "base_string",
+                  OLG_NOTES       "notes",
+                  OLG_TIMESTAMP     "timestamp",
+                  -- INET_NTOA(OLG_REMOTE_IP) "remote_ip"
                   OLG_REMOTE_IP "remote_ip"
-    					FROM OAUTH_LOG
-    					WHERE  OLG_USA_ID_REF = P_USA_ID
-    					ORDER BY OLG_ID DESC
+              FROM OAUTH_LOG
+              WHERE  OLG_USA_ID_REF = P_USA_ID
+              ORDER BY OLG_ID DESC
        )  WHERE ROWNUM<=100; 
   ELSE
       OPEN P_ROWS FOR
       SELECT * FROM (
           SELECT OLG_ID "olg_id",
-    							OLG_OSR_CONSUMER_KEY 	"osr_consumer_key",
-    							OLG_OST_TOKEN			"ost_token",
-    							OLG_OCR_CONSUMER_KEY	"ocr_consumer_key",
-    							OLG_OCT_TOKEN			"oct_token",
-    							OLG_USA_ID_REF			"user_id",
-    							OLG_RECEIVED			"received",
-    							OLG_SENT				"sent",
-    							OLG_BASE_STRING			"base_string",
-    							OLG_NOTES				"notes",
-    							OLG_TIMESTAMP			"timestamp",
-    							-- INET_NTOA(OLG_REMOTE_IP) "remote_ip"
+                  OLG_OSR_CONSUMER_KEY  "osr_consumer_key",
+                  OLG_OST_TOKEN     "ost_token",
+                  OLG_OCR_CONSUMER_KEY  "ocr_consumer_key",
+                  OLG_OCT_TOKEN     "oct_token",
+                  OLG_USA_ID_REF      "user_id",
+                  OLG_RECEIVED      "received",
+                  OLG_SENT        "sent",
+                  OLG_BASE_STRING     "base_string",
+                  OLG_NOTES       "notes",
+                  OLG_TIMESTAMP     "timestamp",
+                  -- INET_NTOA(OLG_REMOTE_IP) "remote_ip"
                   OLG_REMOTE_IP "remote_ip"
-    					FROM OAUTH_LOG
-    					WHERE  OLG_OSR_CONSUMER_KEY = P_OSR_CONSUMER_KEY
+              FROM OAUTH_LOG
+              WHERE  OLG_OSR_CONSUMER_KEY = P_OSR_CONSUMER_KEY
               AND OLG_OCR_CONSUMER_KEY = P_OCR_CONSUMER_KEY
               AND OLG_OST_TOKEN = P_OST_TOKEN
               AND OLG_OCT_TOKEN = P_OCT_TOKEN
               AND (OLG_USA_ID_REF IS NULL OR OLG_USA_ID_REF = P_USA_ID)
-    					ORDER BY OLG_ID DESC
+              ORDER BY OLG_ID DESC
        )  WHERE ROWNUM<=100; 
               
   END IF;

@@ -12,11 +12,11 @@ P_RESULT := 0;
 
 OPEN P_ROWS FOR
  
-SELECT	OST_TOKEN			"token",
-    OST_TOKEN_SECRET	"token_secret",
-    OSR_CONSUMER_KEY	"consumer_key",
-    OSR_CONSUMER_SECRET	"consumer_secret",
-    OST_TOKEN_TYPE		"token_type",
+SELECT  OST_TOKEN     "token",
+    OST_TOKEN_SECRET  "token_secret",
+    OSR_CONSUMER_KEY  "consumer_key",
+    OSR_CONSUMER_SECRET "consumer_secret",
+    OST_TOKEN_TYPE    "token_type",
     OST_CALLBACK_URL    "callback_url",
     OSR_APPLICATION_TITLE "application_title",
     OSR_APPLICATION_DESCR "application_descr",

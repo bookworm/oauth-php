@@ -31,33 +31,33 @@
  */
 abstract class OAuthSignatureMethod
 {
-	/**
-	 * Return the name of this signature
-	 * 
-	 * @return string
-	 */
-	abstract public function name();
-	
-	/**
-	 * Return the signature for the given request
-	 * 
-	 * @param OAuthRequest request
-	 * @param string base_string
-	 * @param string consumer_secret
-	 * @param string token_secret
-	 * @return string  
-	 */
-	abstract public function signature($request, $base_string, $consumer_secret, $token_secret);
+  /**
+   * Return the name of this signature
+   * 
+   * @return string
+   */
+  abstract public function name();
+  
+  /**
+   * Return the signature for the given request
+   * 
+   * @param OAuthRequest request
+   * @param string base_string
+   * @param string consumer_secret
+   * @param string token_secret
+   * @return string  
+   */
+  abstract public function signature($request, $base_string, $consumer_secret, $token_secret);
 
-	/**
-	 * Check if the request signature corresponds to the one calculated for the request.
-	 * 
-	 * @param OAuthRequest request
-	 * @param string base_string	data to be signed, usually the base string, can be a request body
-	 * @param string consumer_secret
-	 * @param string token_secret
-	 * @param string signature		from the request, still urlencoded
-	 * @return string
-	 */
-	abstract public function verify($request, $base_string, $consumer_secret, $token_secret, $signature);
+  /**
+   * Check if the request signature corresponds to the one calculated for the request.
+   * 
+   * @param OAuthRequest request
+   * @param string base_string  data to be signed, usually the base string, can be a request body
+   * @param string consumer_secret
+   * @param string token_secret
+   * @param string signature    from the request, still urlencoded
+   * @return string
+   */
+  abstract public function verify($request, $base_string, $consumer_secret, $token_secret, $signature);
 }

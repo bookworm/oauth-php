@@ -1,13 +1,11 @@
 <?php
 
-
 /**
- Added by Vinay Kant Sahu.
-vinaykant.sahu@gmail.com
+ * Added by Vinay Kant Sahu.
+ * vinaykant.sahu@gmail.com
  * Storage container for the oauth credentials, both server and consumer side.
  * Based on Oracle
  * 
- 
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
  * 
@@ -18,11 +16,8 @@ vinaykant.sahu@gmail.com
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
-
-
-
  */
 
 echo 'Right now we do not have Oracle DB installer.
-Please find OracleDB folder here with this Table, Sequences and Procedures. You need to manually install/create DB schema and SP with your oracle DB. ';
-?>
+  Please find OracleDB folder here with this Table, Sequences and Procedures. You need to manually install/create DB 
+  schema and SP with your oracle DB. ';

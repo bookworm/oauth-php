@@ -33,5 +33,3 @@ require '../core/init.php';
 
 $smarty = session_smarty();
 $smarty->display('index.tpl');
-
-?>

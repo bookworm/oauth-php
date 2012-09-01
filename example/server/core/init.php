@@ -76,53 +76,51 @@ session_start();
 require_once 'smarty/libs/Smarty.class.php';
 function session_smarty()
 {
-	if (!isset($GLOBALS['smarty']))
-	{
-		$GLOBALS['smarty'] = new Smarty;
-		$GLOBALS['smarty']->template_dir = dirname(__FILE__) . '/templates/';
-		$GLOBALS['smarty']->compile_dir = dirname(__FILE__) . '/../cache/templates_c';
-	}
-	
-	return $GLOBALS['smarty'];
+  if (!isset($GLOBALS['smarty']))
+  {
+    $GLOBALS['smarty'] = new Smarty;
+    $GLOBALS['smarty']->template_dir = dirname(__FILE__) . '/templates/';
+    $GLOBALS['smarty']->compile_dir = dirname(__FILE__) . '/../cache/templates_c';
+  }
+  
+  return $GLOBALS['smarty'];
 }
 
 function assert_logged_in()
 {
-	if (empty($_SESSION['authorized']))
-	{
-		$uri = $_SERVER['REQUEST_URI'];
-		header('Location: /logon?goto=' . urlencode($uri));
-		exit();
-	}
+  if (empty($_SESSION['authorized']))
+  {
+    $uri = $_SERVER['REQUEST_URI'];
+    header('Location: /logon?goto=' . urlencode($uri));
+    exit();
+  }
 }
 
 function assert_request_vars()
 {
-	foreach(func_get_args() as $a)
-	{
-		if (!isset($_REQUEST[$a]))
-		{
-			header('HTTP/1.1 400 Bad Request');
-			echo 'Bad request.';
-			exit;
-		}
-	}
+  foreach(func_get_args() as $a)
+  {
+    if (!isset($_REQUEST[$a]))
+    {
+      header('HTTP/1.1 400 Bad Request');
+      echo 'Bad request.';
+      exit;
+    }
+  }
 }
 
 function assert_request_vars_all()
 {
-	foreach($_REQUEST as $row)
-	{
-		foreach(func_get_args() as $a)
-		{
-			if (!isset($row[$a]))
-			{
-				header('HTTP/1.1 400 Bad Request');
-				echo 'Bad request.';
-				exit;
-			}
-		}
-	}
+  foreach($_REQUEST as $row)
+  {
+    foreach(func_get_args() as $a)
+    {
+      if (!isset($row[$a]))
+      {
+        header('HTTP/1.1 400 Bad Request');
+        echo 'Bad request.';
+        exit;
+      }
+    }
+  }
 }
-
-?>
